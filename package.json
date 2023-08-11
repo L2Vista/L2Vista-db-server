@@ -1,0 +1,16 @@
+{
+  "name": "db-server",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node scripts/index.js"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "hardhat": "^2.15.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.2",
+    "dotenv": "^16.0.3",
+    "mysql2": "^3.6.0"
+  }
+}

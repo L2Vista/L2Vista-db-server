@@ -1,0 +1,9 @@
+module.exports = `
+    blockNumber INT,
+    blockTimstamp INT,
+    messageId VARCHAR(255) NOT NULL UNIQUE,
+    chain VARCHAR(255) NOT NULL,
+    hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+`;
