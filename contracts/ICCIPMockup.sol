@@ -28,3 +28,9 @@ interface ICCIPMockup {
 
     function receiveMessage(bytes32 configDigest) external;
 }
+
+select
+*
+from fromtx
+left join totx
+on fromtx.messageId = totx.messageId

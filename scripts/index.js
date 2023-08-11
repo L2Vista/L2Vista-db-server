@@ -4,6 +4,8 @@ const zoraCcipSync = require("./zora_ccip");
 const zoraHyperlaneSync = require("./zora_hyperlane");
 const opCcipSync = require("./op_ccip");
 const opHyperlaneSync = require("./op_hyperlane");
+const baseCcipSync = require("./base_ccip");
+const baseHyperlaneSync = require("./base_hyperlane");
 
 async function start() {
     //mode
@@ -15,6 +17,9 @@ async function start() {
     //op
     opCcipSync();
     opHyperlaneSync();
+    //base
+    baseCcipSync();
+    baseHyperlaneSync();
 }
 
 start();
