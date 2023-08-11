@@ -33,9 +33,6 @@ async function attach() {
     await connection.execute(createTableSql_fromTx);
     const createTableSql_toTx = `CREATE TABLE IF NOT EXISTS ${dbConfig.schema.toTxConfig.tableName} (${dbConfig.schema.toTxConfig.tableSchema})`;
     await connection.execute(createTableSql_toTx);
-
-    provider = new ethers.providers.JsonRpcProvider(chainInfo.mode.url);
-    contractAddr = chainInfo.mode.ccipAddr;
 }
 
 async function ccipsendRequestedsQuery(_first, _skip) {
