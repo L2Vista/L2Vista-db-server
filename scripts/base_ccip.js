@@ -36,7 +36,7 @@ async function attach() {
 }
 
 async function ccipsendRequestedsQuery(_first, _skip) {
-    console.log(_first, _skip)
+    
     //define the query to fetch a list of ten tokens 
     const ccipsendRequestedsQuery =
         `query {
@@ -62,7 +62,7 @@ async function ccipsendRequestedsQuery(_first, _skip) {
 }
 
 async function transmittedsQuery(_first, _skip) {
-    console.log(_first, _skip)
+    
     //define the query to fetch a list of ten tokens 
     const transmittedsQuery =
         `query {

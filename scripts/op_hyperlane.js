@@ -36,7 +36,7 @@ async function attach() {
 }
 
 async function dispatchesQuery(_first, _skip) {
-    console.log(_first, _skip)
+    
     const dispatchesQuery =
         `query {
         dispatches(first: ${_first}, skip: ${_skip}, orderByField: "blockTimestamp", orderByDirection: "DESC") {
@@ -67,7 +67,7 @@ async function dispatchesQuery(_first, _skip) {
 }
 
 async function processIdQuery(_first, _skip) {
-    console.log(_first, _skip)
+    
     const processIdsQuery =
         `query {
                 processIds(first: ${_first}, skip: ${_skip}, orderByField: "blockTimestamp", orderByDirection: "DESC") {
