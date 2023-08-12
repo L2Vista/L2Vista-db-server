@@ -56,5 +56,13 @@ npx hardhat compile
 npm start
 ```
 
+## Database Operations
+Dropping the Database
+If you need to reset the database, you can use the following command to drop it:
+```shell
+npm run drop
+```
+**Warning**: Be cautious when using this command, as it will permanently delete all the data in your 'exployer' database.
+
 ## Contributing
 If you'd like to contribute to the project, please fork the repository, make your changes, and submit a pull request. We appreciate all contributions and feedback!
