@@ -36,6 +36,7 @@ npm install
 2. **Set Up Configuration:**
 - **Review the `.example.env` file.**
 - **Create a `.env` file based on the example.** Adjust the values as necessary.
+
 For Linux or macOS:
 ```shell
 cp .example.env .env
