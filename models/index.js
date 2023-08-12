@@ -9,7 +9,7 @@ const config = {
     host: process.env.HOST,
     user: process.env.DB_USER,
     password: process.env.PASSWORD,
-    port: process.env.PORT,
+    port: process.env.DB_PORT,
 };
 
 // schema
