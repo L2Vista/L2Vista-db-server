@@ -27,15 +27,9 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ```
 
-## Quick Start Guide
-1. **Install Dependencies:**
-```shell
-npm install
-```
-
-2. **Set Up Configuration:**
-- **Review the `.example.env` file.**
-- **Create a `.env` file based on the example.** Adjust the values as necessary.
+## Set Up Configuration:
+1. **Review the `.example.env` file.**
+2. **Create a `.env` file based on the example.** Adjust the values as 
 
 For Linux or macOS:
 ```shell
@@ -46,7 +40,13 @@ For Windows:
 copy .example.env .env
 ```
 
-3. **Launch the Project:**
+## Quick Start Guide
+1. **Install Dependencies:**
+```shell
+npm install
+```
+
+2. **Launch the Project:**
 ```shell
 npm start
 ```
