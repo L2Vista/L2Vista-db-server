@@ -46,7 +46,12 @@ copy .example.env .env
 npm install
 ```
 
-2. **Launch the Project:**
+2. **Compile Contracts:**
+```shell
+npx hardhat compile
+```
+
+3. **Launch the Project:**
 ```shell
 npm start
 ```
