@@ -2,7 +2,8 @@
   "name": "db-server",
   "version": "1.0.0",
   "scripts": {
-    "start": "node scripts/index.js"
+    "start": "node scripts/index.js",
+    "drop": "node scripts/drop.js"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
