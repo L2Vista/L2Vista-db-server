@@ -7,7 +7,7 @@ class EventSynchronizer {
         this.tableName = tn;
         this.provider = pro;
         this.contract = ca;
-        this.BLOCK_INTERVAL = 10000;
+        this.BLOCK_INTERVAL = 1000;
         this.SYNC_SLEEP_TIME = 1000;
         this.CRON_SLEEP_TIME = 10000;
     }

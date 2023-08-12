@@ -37,31 +37,32 @@ async function initialize() {
 async function main() {
     const connection = await initialize();
 
-    const storeCcip = async (chainName) => {
-        const category = `ccip`;
-        const tableName = `${chainName}_ccip`;
-        const provider = new ethers.providers.JsonRpcProvider(chainInfo[chainName].url);
-        const contract = await ethers.getContractAt("ICCIPMockup", chainInfo[chainName].ccipAddr);
+    const contractAddr = "0xCC737a94FecaeC165AbCf12dED095BB13F037685";
 
-        const synchronizer = new CcipEventSynchronizer(connection, category, tableName, provider, contract);
-        synchronizer.sync();
-    }
+    const infos = [
+        ["alfajores", "https://alfajores-forno.celo-testnet.org", contractAddr,],
+        ["fuji", "https://api.avax-test.network/ext/bc/C/rpc", contractAddr,],
+        ["mumbai", "https://endpoints.omniatech.io/v1/matic/mumbai/public", contractAddr,],
+        ["binance", "https://binance-testnet.rpc.thirdweb.com", contractAddr,],
+        ["goerli", "https://ethereum-goerli.publicnode.com", contractAddr,],
+        ["optimism", "https://optimism-goerli.publicnode.com", contractAddr,],
+        ["arbitrum", "https://arbitrum-goerli.publicnode.com", contractAddr,],
+        ["sepolia", "https://eth-sepolia.g.alchemy.com/v2/demo", contractAddr,],
+        ["moonbase", "https://moonbeam-alpha.api.onfinality.io/public", contractAddr,],
+    ]
 
-    const storeHyperlane = async (chainName) => {
+    const storeHyperlane = async (cn, url, ca) => {
         const category = `hyperlane`;
-        const tableName = `${chainName}_hyperlane`;
-        const provider = new ethers.providers.JsonRpcProvider(chainInfo[chainName].url);
-        const contract = await ethers.getContractAt("IHyperlaneMockup", chainInfo[chainName].hyperlaneAddr);
+        const tableName = `${cn}_hyperlane_v2`;
+        const provider = new ethers.providers.JsonRpcProvider(url);
+        const contract = await ethers.getContractAt("IHyperlaneMockup", ca);
 
         const synchronizer = new HyperlaneEventSynchronizer(connection, category, tableName, provider, contract);
         synchronizer.sync();
     }
 
-    const l2Arr = Object.keys(chainInfo);
-    for (let i = 0; i < l2Arr.length; i++) {
-        console.log(`Store ${l2Arr[i]} Hyperlane Contract data.`);
-        storeCcip(l2Arr[i]);
-        storeHyperlane(l2Arr[i]);
+    for (let i = 0; i < infos.length; i++) {
+        storeHyperlane(infos[i][0], infos[i][1], infos[i][2]);
     }
 }
 
