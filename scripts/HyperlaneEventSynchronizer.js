@@ -1,12 +1,13 @@
 const dbConfig = require('../models/index');
 
 class EventSynchronizer {
-    constructor(con, cg, tn, pro, ca) {
+    constructor(con, cg, tn, pro, ca, bn) {
         this.connection = con;
         this.category = cg;
         this.tableName = tn;
         this.provider = pro;
         this.contract = ca;
+        this.START_BLOCK_NUMBER = bn;
         this.BLOCK_INTERVAL = 1000;
         this.SYNC_SLEEP_TIME = 1000;
         this.CRON_SLEEP_TIME = 10000;
@@ -19,7 +20,7 @@ class EventSynchronizer {
     async getLastBlock() {
         try {
             const [rows, fields] = await this.connection.execute(`SELECT MAX(blockNumber) as lastBlock FROM lastBlocks WHERE tableName = "${this.tableName}"`);
-            return rows[0].lastBlock || 0;
+            return rows[0].lastBlock || this.START_BLOCK_NUMBER;
         } catch (err) {
             console.error('Error: ', err);
         }
@@ -85,6 +86,17 @@ class EventSynchronizer {
         return columnNames;
     }
 
+    async getTimestamp(blockNumber) {
+        const blockInfo = await this.provider.getBlock();
+        const curBlockNumber = blockInfo.number;
+        const curTimestamp = blockInfo.timestamp;
+
+        const preBlockNumber = 15339044;
+        const preTimestamp = 1672069214;
+
+        return Math.floor((blockNumber - preBlockNumber) / (curBlockNumber - preBlockNumber) * (curTimestamp - preTimestamp) + preTimestamp);
+    }
+
     async storeEvents(startBlock, endBlock) {
         const networkId = (await this.provider.getNetwork()).chainId;
 
@@ -109,7 +121,8 @@ class EventSynchronizer {
             const data_DispatchId = transactionDatas_DispatchId[i];
 
             const blockNumber = data_Dispatch.blockNumber;
-            const blockTimstamp = (await this.provider.getBlock(blockNumber)).timestamp;
+            // const blockTimstamp = (await this.provider.getBlock(blockNumber)).timestamp;
+            const blockTimstamp = this.tableName == 'alfajores_hyperlane_v2' ? await this.getTimestamp(blockNumber) : (await this.provider.getBlock(blockNumber)).timestamp;
             const messageId = data_DispatchId.topics[1];
             const transactionHash = data_Dispatch.transactionHash;
 
@@ -122,7 +135,8 @@ class EventSynchronizer {
             const data_ProcessId = transactionDatas_ProcessId[i];
 
             const blockNumber = data_ProcessId.blockNumber;
-            const blockTimstamp = (await this.provider.getBlock(blockNumber)).timestamp;
+            // const blockTimstamp = (await this.provider.getBlock(blockNumber)).timestamp;
+            const blockTimstamp = this.tableName == 'alfajores_hyperlane_v2' ? await this.getTimestamp(blockNumber) : (await this.provider.getBlock(blockNumber)).timestamp;
             const messageId = data_ProcessId.topics[1];
             const transactionHash = data_ProcessId.transactionHash;
 
@@ -153,9 +167,9 @@ class EventSynchronizer {
             const endBlock = Math.min(i + this.BLOCK_INTERVAL - 1, currentBlock);
             await this.storeEvents(i, endBlock);
             await this.sleep(this.SYNC_SLEEP_TIME);
-        }
 
-        await this.updateLastBlock(currentBlock);
+            await this.updateLastBlock(endBlock);
+        }
 
         console.log('Initial sync completed');
         this.startCronJob();

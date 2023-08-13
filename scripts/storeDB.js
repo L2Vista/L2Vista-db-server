@@ -40,29 +40,29 @@ async function main() {
     const contractAddr = "0xCC737a94FecaeC165AbCf12dED095BB13F037685";
 
     const infos = [
-        ["alfajores", "https://alfajores-forno.celo-testnet.org", contractAddr,],
-        ["fuji", "https://api.avax-test.network/ext/bc/C/rpc", contractAddr,],
-        ["mumbai", "https://endpoints.omniatech.io/v1/matic/mumbai/public", contractAddr,],
-        ["binance", "https://binance-testnet.rpc.thirdweb.com", contractAddr,],
-        ["goerli", "https://ethereum-goerli.publicnode.com", contractAddr,],
-        ["optimism", "https://optimism-goerli.publicnode.com", contractAddr,],
-        ["arbitrum", "https://arbitrum-goerli.publicnode.com", contractAddr,],
-        ["sepolia", "https://eth-sepolia.g.alchemy.com/v2/demo", contractAddr,],
-        ["moonbase", "https://moonbeam-alpha.api.onfinality.io/public", contractAddr,],
+        ["alfajores", "https://alfajores-forno.celo-testnet.org", contractAddr, 15339044],
+        ["fuji", "https://api.avax-test.network/ext/bc/C/rpc", contractAddr, 17333916],
+        ["mumbai", "https://endpoints.omniatech.io/v1/matic/mumbai/public", contractAddr, 30170960],
+        ["binance", "https://binance-testnet.rpc.thirdweb.com", contractAddr, 25793854],
+        ["goerli", "https://ethereum-goerli.publicnode.com", contractAddr, 8204033],
+        ["optimism", "https://optimism-goerli.publicnode.com", contractAddr, 3746084],
+        ["arbitrum", "https://arbitrum-goerli.publicnode.com", contractAddr, 3563223],
+        ["sepolia", "https://eth-sepolia.g.alchemy.com/v2/demo", contractAddr, 3082935],
+        ["moonbase", "https://moonbeam-alpha.api.onfinality.io/public", contractAddr, 3429551],
     ]
 
-    const storeHyperlane = async (cn, url, ca) => {
+    const storeHyperlaneV2 = async (cn, url, ca, bn) => {
         const category = `hyperlane`;
         const tableName = `${cn}_hyperlane_v2`;
         const provider = new ethers.providers.JsonRpcProvider(url);
         const contract = await ethers.getContractAt("IHyperlaneMockup", ca);
 
-        const synchronizer = new HyperlaneEventSynchronizer(connection, category, tableName, provider, contract);
+        const synchronizer = new HyperlaneEventSynchronizer(connection, category, tableName, provider, contract, bn);
         synchronizer.sync();
     }
 
     for (let i = 0; i < infos.length; i++) {
-        storeHyperlane(infos[i][0], infos[i][1], infos[i][2]);
+        storeHyperlaneV2(infos[i][0], infos[i][1], infos[i][2], infos[i][3]);
     }
 }
 
