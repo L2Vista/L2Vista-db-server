@@ -5,8 +5,8 @@ const mysql = require('mysql2/promise');
 
 const dbConfig = require('../models/index');
 
-const CcipTheGraphSynchronizer = require("./CcipTheGraphSynchronizer");
-const HyperlaneTheGraphSynchronizer = require("./HyperlaneTheGraphSynchronizer");
+const CcipTheGraphSynchronizer = require("./ccip/CcipTheGraphSynchronizer");
+const HyperlaneTheGraphSynchronizer = require("./hyperlane/HyperlaneTheGraphSynchronizer");
 
 async function initialize() {
     // Setup Database

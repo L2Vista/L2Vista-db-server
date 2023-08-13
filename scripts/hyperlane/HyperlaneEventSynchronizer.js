@@ -1,7 +1,4 @@
-const {
-    ethers
-} = require('hardhat');
-const dbConfig = require('../models/index');
+const dbConfig = require('../../models/index');
 
 class EventSynchronizer {
     constructor(con, cg, tn, pro, ca, bn) {

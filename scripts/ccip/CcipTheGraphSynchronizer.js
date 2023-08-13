@@ -1,5 +1,5 @@
 const axios = require("axios");
-const dbConfig = require('../models/index');
+const dbConfig = require('../../models/index');
 
 class TheGraphSynchronizer {
     constructor(co, pro, qu, ni) {
@@ -7,44 +7,36 @@ class TheGraphSynchronizer {
         this.queryURL = qu;
         this.networkId = ni;
         this.connection = co;
-        this.CATEGORY = "hyperlane";
+        this.CATEGORY = "ccip";
         this.FIRST_NUMBER = 100;
         this.SKIP_NUMBER = 0;
         this.CRON_SLEEP_TIME = 1000;
     }
 
-    async dispatchesQuery(_first, _skip) {
-        const dispatchesQuery =
+    async ccipsendRequestedsQuery(_first, _skip) {
+        const ccipsendRequestedsQuery =
             `query {
-                dispatches(first: ${_first}, skip: ${_skip}, orderByField: "blockTimestamp", orderByDirection: "DESC") {
-                id
-                sender
-                destination
-                recipient
-                blockNumber
-                blockTimestamp
-                transactionHash
-                }
-                dispatchIds(first: ${_first}, skip: ${_skip},  orderByField: "blockTimestamp", orderByDirection: "DESC") {
-                id
-                messageId
-                blockNumber
-                blockTimestamp
+                ccipsendRequesteds(first: ${_first}, skip: ${_skip}, orderByField: "blockTimestamp", orderByDirection: "DESC") {
+                    message_messageId
+                    blockNumber
+                    blockTimestamp
+                    transactionHash
                 }
             }
             `;
 
         const response = await axios.post(this.queryURL, {
-            query: dispatchesQuery
+            query: ccipsendRequestedsQuery
         });
 
         return response.data.data;
     }
 
-    async processIdQuery(_first, _skip) {
-        const processIdsQuery =
+    async executionStateChangedQuery(_first, _skip) {
+        const executionStateChangedQuery =
             `query {
-                        processIds(first: ${_first}, skip: ${_skip}, orderByField: "blockTimestamp", orderByDirection: "DESC") {
+                    executionStateChangeds(first: ${_first}, skip: ${_skip}, orderByField: "blockTimestamp", orderByDirection: "DESC") {
+                        id
                         messageId
                         blockNumber
                         blockTimestamp
@@ -54,7 +46,7 @@ class TheGraphSynchronizer {
             `;
 
         const response = await axios.post(this.queryURL, {
-            query: processIdsQuery
+            query: executionStateChangedQuery
         });
 
         return response.data.data;
@@ -113,12 +105,12 @@ class TheGraphSynchronizer {
     }
 
     async store() {
-        const sendDatas = await this.dispatchesQuery(this.FIRST_NUMBER, this.SKIP_NUMBER);
-        for (let i = 0; i < sendDatas.dispatches.length; i++) {
-            const blockNumber = sendDatas.dispatches[i].blockNumber;
-            const blockTimstamp = sendDatas.dispatches[i].blockTimestamp;
-            const messageId = sendDatas.dispatchIds[i].messageId;
-            const transactionHash = sendDatas.dispatches[i].transactionHash;
+        const sendDatas = await this.ccipsendRequestedsQuery(this.FIRST_NUMBER, this.SKIP_NUMBER);
+        for (let i = 0; i < sendDatas.ccipsendRequesteds.length; i++) {
+            const blockNumber = sendDatas.ccipsendRequesteds[i].blockNumber;
+            const blockTimstamp = sendDatas.ccipsendRequesteds[i].blockTimestamp;
+            const messageId = sendDatas.ccipsendRequesteds[i].sourceChainSelector;
+            const transactionHash = sendDatas.ccipsendRequesteds[i].transactionHash;
             const { from, to } = await this.getFromToAddress(transactionHash);
 
             const params = [blockNumber, blockTimstamp, messageId, from, to, this.CATEGORY, this.networkId, transactionHash];
@@ -126,12 +118,12 @@ class TheGraphSynchronizer {
             await this.insertData(dbConfig.schema.fromTxConfig.tableName, tableColumns, params);
         }
 
-        const receiveDatas = await this.processIdQuery(this.FIRST_NUMBER, this.SKIP_NUMBER);
-        for (let i = 0; i < receiveDatas.processIds.length; i++) {
-            const blockNumber = receiveDatas.processIds[i].blockNumber;
-            const blockTimstamp = receiveDatas.processIds[i].blockTimestamp;
-            const messageId = receiveDatas.processIds[i].messageId;
-            const transactionHash = receiveDatas.processIds[i].transactionHash;
+        const receiveDatas = await this.executionStateChangedQuery(this.FIRST_NUMBER, this.SKIP_NUMBER);
+        for (let i = 0; i < receiveDatas.executionStateChangeds.length; i++) {
+            const blockNumber = receiveDatas.executionStateChangeds[i].blockNumber;
+            const blockTimstamp = receiveDatas.executionStateChangeds[i].blockTimestamp;
+            const messageId = receiveDatas.executionStateChangeds[i].configDigest;
+            const transactionHash = receiveDatas.executionStateChangeds[i].transactionHash;
             const { from, to } = await this.getFromToAddress(transactionHash);
 
             const params = [blockNumber, blockTimstamp, messageId, from, to, this.CATEGORY, this.networkId, transactionHash];
