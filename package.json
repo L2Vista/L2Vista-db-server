@@ -2,7 +2,7 @@
   "name": "db-server",
   "version": "1.0.0",
   "scripts": {
-    "start": "node scripts/storeDB.js",
+    "start": "node scripts/index.js",
     "drop": "node scripts/drop.js"
   },
   "devDependencies": {
