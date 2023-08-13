@@ -40,15 +40,15 @@ async function main() {
     const contractAddr = "0xCC737a94FecaeC165AbCf12dED095BB13F037685";
 
     const infos = [
-        ["alfajores", "https://alfajores-forno.celo-testnet.org", contractAddr, 18706336], // 15339044
-        ["fuji", "https://api.avax-test.network/ext/bc/C/rpc", contractAddr, 23964427], // 17333916
-        ["mumbai", "https://endpoints.omniatech.io/v1/matic/mumbai/public", contractAddr, 37843923], // 30170960
-        ["binance", "https://binance-testnet.rpc.thirdweb.com", contractAddr, 31304453], // 25793854
-        ["goerli", "https://ethereum-goerli.publicnode.com", contractAddr, 9309795], // 8204033
-        ["optimism", "https://optimism-goerli.publicnode.com", contractAddr, 11942654], // 3746084
-        ["arbitrum", "https://arbitrum-goerli.publicnode.com", contractAddr, 30182841], // 3563223
-        ["sepolia", "https://eth-sepolia.g.alchemy.com/v2/demo", contractAddr, 3879748], // 3082935
-        ["moonbase", "https://moonbeam-alpha.api.onfinality.io/public", contractAddr, 4707950], // 3429551
+        ["alfajores", "https://alfajores-forno.celo-testnet.org", contractAddr, 19176411], // 15339044
+        ["fuji", "https://api.avax-test.network/ext/bc/C/rpc", contractAddr, 24764520], // 17333916
+        ["mumbai", "https://endpoints.omniatech.io/v1/matic/mumbai/public", contractAddr, 38680753], // 30170960
+        ["binance", "https://binance-testnet.rpc.thirdweb.com", contractAddr, 32194202], // 25793854
+        ["goerli", "https://ethereum-goerli.publicnode.com", contractAddr, 9468703], // 8204033
+        ["optimism", "https://optimism-goerli.publicnode.com", contractAddr, 12941617], // 3746084
+        ["arbitrum", "https://arbitrum-goerli.publicnode.com", contractAddr, 33100158], // 3563223
+        ["sepolia", "https://eth-sepolia.g.alchemy.com/v2/demo", contractAddr, 4033835], // 3082935
+        ["moonbase", "https://moonbeam-alpha.api.onfinality.io/public", contractAddr, 4861269], // 3429551
     ]
 
     const storeHyperlaneV2 = async (cn, url, ca, bn) => {
