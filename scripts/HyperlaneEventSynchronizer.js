@@ -90,11 +90,18 @@ class EventSynchronizer {
     }
 
     async getFromToAddress(transactionHash) {
-        const transactionData = await this.provider.getTransaction(transactionHash);
-        const from = transactionData.from;
-        const to = transactionData.to;
-
-        return { from, to };
+        try {
+            const transactionData = await this.provider.getTransaction(transactionHash);
+            const from = transactionData.from;
+            const to = transactionData.to;
+            
+            return { from, to };
+        } catch (error) {
+            const from = "0x0000000000000000000000000000000000000000";
+            const to = "0x0000000000000000000000000000000000000000";
+            
+            return { from, to };
+        }
     }
 
     async getTimestamp(blockNumber) {
