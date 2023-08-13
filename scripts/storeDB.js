@@ -33,7 +33,7 @@ async function initialize() {
     return connection;
 }
 
-async function main() {
+async function store() {
     const connection = await initialize();
 
     const contractAddr = "0xCC737a94FecaeC165AbCf12dED095BB13F037685";
@@ -118,4 +118,4 @@ async function main() {
     }
 }
 
-module.exports = main;
+module.exports = store;
