@@ -1,15 +1,17 @@
 const dbConfig = require('../models/index');
 
 class EventSynchronizer {
-    constructor(con, cg, tn, pro, ca) {
+    constructor(con, cg, tn, pro, onCa, offCa, bn) {
         this.connection = con;
         this.category = cg;
         this.tableName = tn;
         this.provider = pro;
-        this.contract = ca;
-        this.BLOCK_INTERVAL = 10000;
-        this.SYNC_SLEEP_TIME = 1000;
-        this.CRON_SLEEP_TIME = 10000;
+        this.onContract = onCa;
+        this.offContract = offCa;
+        this.START_BLOCK_NUMBER = bn;
+        this.BLOCK_INTERVAL = 1000;
+        this.SYNC_SLEEP_TIME = 100;
+        this.CRON_SLEEP_TIME = 30000;
     }
 
     sleep(ms) {
@@ -19,7 +21,7 @@ class EventSynchronizer {
     async getLastBlock() {
         try {
             const [rows, fields] = await this.connection.execute(`SELECT MAX(blockNumber) as lastBlock FROM lastBlocks WHERE tableName = "${this.tableName}"`);
-            return rows[0].lastBlock || 0;
+            return rows[0].lastBlock || this.START_BLOCK_NUMBER;
         } catch (err) {
             console.error('Error: ', err);
         }
@@ -85,42 +87,59 @@ class EventSynchronizer {
         return columnNames;
     }
 
+    async getFromToAddress(transactionHash) {
+        try {
+            const transactionData = await this.provider.getTransaction(transactionHash);
+            const from = transactionData.from;
+            const to = transactionData.to;
+            
+            return { from, to };
+        } catch (error) {
+            const from = "0x0000000000000000000000000000000000000000";
+            const to = "0x0000000000000000000000000000000000000000";
+            
+            return { from, to };
+        }
+    }
+
     async storeEvents(startBlock, endBlock) {
         const networkId = (await this.provider.getNetwork()).chainId;
 
-        const filter_CCIPSendRequested = this.contract.filters.CCIPSendRequested();
+        const filter_CCIPSendRequested = this.onContract.filters.CCIPSendRequested();
         filter_CCIPSendRequested.fromBlock = startBlock;
         filter_CCIPSendRequested.toBlock = endBlock;
 
-        const filter_Transmitted = this.contract.filters.Transmitted();
-        filter_Transmitted.fromBlock = startBlock;
-        filter_Transmitted.toBlock = endBlock;
+        const filter_ExecutionStateChanged = this.offContract.filters.ExecutionStateChanged();
+        filter_ExecutionStateChanged.fromBlock = startBlock;
+        filter_ExecutionStateChanged.toBlock = endBlock;
 
         const transactionDatas_CCIPSendRequested = await this.provider.getLogs(filter_CCIPSendRequested);
-        const transactionDatas_Transmitted = await this.provider.getLogs(filter_Transmitted);
+        const transactionDatas_ExecutionStateChanged = await this.provider.getLogs(filter_ExecutionStateChanged);
 
         for (let i = 0; i < transactionDatas_CCIPSendRequested.length; i++) {
             const data_CCIPSendRequested = transactionDatas_CCIPSendRequested[i];
-
+            const { messageId } = this.onContract.interface.parseLog(data_CCIPSendRequested).args[0];
+            
             const blockNumber = data_CCIPSendRequested.blockNumber;
             const blockTimstamp = (await this.provider.getBlock(blockNumber)).timestamp;
-            const messageId = data_CCIPSendRequested.topics[1];
             const transactionHash = data_CCIPSendRequested.transactionHash;
+            const { from, to } = await this.getFromToAddress(transactionHash);
 
-            const params = [blockNumber, blockTimstamp, messageId, this.category, networkId, transactionHash];
+            const params = [blockNumber, blockTimstamp, messageId, from, to, this.category, networkId, transactionHash];
             const tableColumns = this.extractColumnNames(dbConfig.schema.fromTxConfig.tableSchema);
             await this.insertData(dbConfig.schema.fromTxConfig.tableName, tableColumns, params);
         }
 
-        for (let i = 0; i < transactionDatas_Transmitted.length; i++) {
-            const data_Transmitted = transactionDatas_Transmitted[i];
+        for (let i = 0; i < transactionDatas_ExecutionStateChanged.length; i++) {
+            const data_ExecutionStateChanged = transactionDatas_ExecutionStateChanged[i];
 
-            const blockNumber = data_Transmitted.blockNumber;
+            const blockNumber = data_ExecutionStateChanged.blockNumber;
             const blockTimstamp = (await this.provider.getBlock(blockNumber)).timestamp;
-            const messageId = data_Transmitted.topics[1];
-            const transactionHash = data_Transmitted.transactionHash;
+            const messageId = data_ExecutionStateChanged.topics[2];
+            const transactionHash = data_ExecutionStateChanged.transactionHash;
+            const { from, to } = await this.getFromToAddress(transactionHash);
 
-            const params = [blockNumber, blockTimstamp, messageId, this.category, networkId, transactionHash];
+            const params = [blockNumber, blockTimstamp, messageId, from, to, this.category, networkId, transactionHash];
             const tableColumns = this.extractColumnNames(dbConfig.schema.toTxConfig.tableSchema);
             await this.insertData(dbConfig.schema.toTxConfig.tableName, tableColumns, params);
         }
@@ -147,9 +166,9 @@ class EventSynchronizer {
             const endBlock = Math.min(i + this.BLOCK_INTERVAL - 1, currentBlock);
             await this.storeEvents(i, endBlock);
             await this.sleep(this.SYNC_SLEEP_TIME);
-        }
 
-        await this.updateLastBlock(currentBlock);
+            await this.updateLastBlock(endBlock);
+        }
 
         console.log('Initial sync completed');
         this.startCronJob();

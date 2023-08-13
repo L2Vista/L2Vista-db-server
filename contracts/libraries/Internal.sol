@@ -21,4 +21,11 @@ library Internal {
         address feeToken;
         bytes32 messageId;
     }
+
+    enum MessageExecutionState {
+        UNTOUCHED,
+        IN_PROGRESS,
+        SUCCESS,
+        FAILURE
+    }
 }

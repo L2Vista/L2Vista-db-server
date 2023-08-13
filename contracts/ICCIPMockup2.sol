@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 
 // import "hardhat/console.sol";
 
-interface ICCIPMockup {
+interface ICCIPMockup2 {
     event CCIPSendRequested(
         bytes32 indexed sourceChainSelector,
         uint256 sequenceNumber,
