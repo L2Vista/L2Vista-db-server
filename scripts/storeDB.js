@@ -41,7 +41,7 @@ async function main() {
 
     const infos = [
         ["alfajores", "https://alfajores-forno.celo-testnet.org", contractAddr, 19176411], // 15339044
-        ["fuji", "https://api.avax-test.network/ext/bc/C/rpc", contractAddr, 24764520], // 17333916
+        ["fuji", "https://avalanche-fuji-c-chain.publicnode.com", contractAddr, 24764520], // 17333916
         ["mumbai", "https://rpc-mumbai.maticvigil.com", contractAddr, 38680753], // 30170960
         ["binance", "https://binance-testnet.rpc.thirdweb.com", contractAddr, 32194202], // 25793854
         ["goerli", "https://ethereum-goerli.publicnode.com", contractAddr, 9468703], // 8204033
