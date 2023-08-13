@@ -62,7 +62,7 @@ async function main() {
     }
 
     for (let i = 0; i < hyperlaneInfos.length; i++) {
-        // storeHyperlaneV2(hyperlaneInfos[i][0], hyperlaneInfos[i][1], hyperlaneInfos[i][2], hyperlaneInfos[i][3]);
+        storeHyperlaneV2(hyperlaneInfos[i][0], hyperlaneInfos[i][1], hyperlaneInfos[i][2], hyperlaneInfos[i][3]);
     }
 
     const ccipInfos = [
