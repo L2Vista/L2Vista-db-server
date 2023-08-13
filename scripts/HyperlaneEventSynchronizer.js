@@ -12,7 +12,7 @@ class EventSynchronizer {
         this.contract = ca;
         this.START_BLOCK_NUMBER = bn;
         this.BLOCK_INTERVAL = 1000;
-        this.SYNC_SLEEP_TIME = 1000;
+        this.SYNC_SLEEP_TIME = 100;
         this.CRON_SLEEP_TIME = 10000;
     }
 
