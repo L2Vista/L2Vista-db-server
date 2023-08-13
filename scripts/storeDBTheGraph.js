@@ -33,7 +33,7 @@ async function initialize() {
     return connection;
 }
 
-async function main() {
+async function store() {
     const connection = await initialize();
 
     const infos = [
@@ -61,4 +61,4 @@ async function main() {
     }
 }
 
-main();
+module.exports = store;
