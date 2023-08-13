@@ -3,7 +3,6 @@ const {
 } = require('hardhat');
 const mysql = require('mysql2/promise');
 
-const chainInfo = require("../config/chainInfo");
 const dbConfig = require('../models/index');
 
 const CcipEventSynchronizer = require("./CcipEventSynchronizer");
