@@ -89,9 +89,12 @@ class EventSynchronizer {
         return columnNames;
     }
 
-    convertHexToChecksumAddress(hexAddress) {
-        const address = "0x" + hexAddress.substring(26);
-        return ethers.utils.getAddress(address);
+    async getFromToAddress(transactionHash) {
+        const transactionData = await this.provider.getTransaction(transactionHash);
+        const from = transactionData.from;
+        const to = transactionData.to;
+
+        return { from, to };
     }
 
     async getTimestamp(blockNumber) {
@@ -132,11 +135,10 @@ class EventSynchronizer {
             // const blockTimstamp = (await this.provider.getBlock(blockNumber)).timestamp;
             const blockTimstamp = this.tableName == 'alfajores_hyperlane_v2' ? await this.getTimestamp(blockNumber) : (await this.provider.getBlock(blockNumber)).timestamp;
             const messageId = data_DispatchId.topics[1];
-            const sender = this.convertHexToChecksumAddress(data_Dispatch.topics[1]);
-            const recipient = this.convertHexToChecksumAddress(data_Dispatch.topics[3]);
             const transactionHash = data_Dispatch.transactionHash;
+            const { from, to } = await this.getFromToAddress(transactionHash);
 
-            const params = [blockNumber, blockTimstamp, messageId, sender, recipient, this.category, networkId, transactionHash];
+            const params = [blockNumber, blockTimstamp, messageId, from, to, this.category, networkId, transactionHash];
             const tableColumns = this.extractColumnNames(dbConfig.schema.fromTxConfig.tableSchema);
             await this.insertData(dbConfig.schema.fromTxConfig.tableName, tableColumns, params);
         }
@@ -149,8 +151,9 @@ class EventSynchronizer {
             const blockTimstamp = this.tableName == 'alfajores_hyperlane_v2' ? await this.getTimestamp(blockNumber) : (await this.provider.getBlock(blockNumber)).timestamp;
             const messageId = data_ProcessId.topics[1];
             const transactionHash = data_ProcessId.transactionHash;
+            const { from, to } = await this.getFromToAddress(transactionHash);
 
-            const params = [blockNumber, blockTimstamp, messageId, this.category, networkId, transactionHash];
+            const params = [blockNumber, blockTimstamp, messageId, from, to, this.category, networkId, transactionHash];
             const tableColumns = this.extractColumnNames(dbConfig.schema.toTxConfig.tableSchema);
             await this.insertData(dbConfig.schema.toTxConfig.tableName, tableColumns, params);
         }
