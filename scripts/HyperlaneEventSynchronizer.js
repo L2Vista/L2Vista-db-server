@@ -1,3 +1,6 @@
+const {
+    ethers
+} = require('hardhat');
 const dbConfig = require('../models/index');
 
 class EventSynchronizer {
@@ -86,6 +89,11 @@ class EventSynchronizer {
         return columnNames;
     }
 
+    convertHexToChecksumAddress(hexAddress) {
+        const address = "0x" + hexAddress.substring(26);
+        return ethers.utils.getAddress(address);
+    }
+
     async getTimestamp(blockNumber) {
         const blockInfo = await this.provider.getBlock();
         const curBlockNumber = blockInfo.number;
@@ -124,9 +132,11 @@ class EventSynchronizer {
             // const blockTimstamp = (await this.provider.getBlock(blockNumber)).timestamp;
             const blockTimstamp = this.tableName == 'alfajores_hyperlane_v2' ? await this.getTimestamp(blockNumber) : (await this.provider.getBlock(blockNumber)).timestamp;
             const messageId = data_DispatchId.topics[1];
+            const sender = this.convertHexToChecksumAddress(data_Dispatch.topics[1]);
+            const recipient = this.convertHexToChecksumAddress(data_Dispatch.topics[3]);
             const transactionHash = data_Dispatch.transactionHash;
 
-            const params = [blockNumber, blockTimstamp, messageId, this.category, networkId, transactionHash];
+            const params = [blockNumber, blockTimstamp, messageId, sender, recipient, this.category, networkId, transactionHash];
             const tableColumns = this.extractColumnNames(dbConfig.schema.fromTxConfig.tableSchema);
             await this.insertData(dbConfig.schema.fromTxConfig.tableName, tableColumns, params);
         }
